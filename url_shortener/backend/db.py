@@ -4,11 +4,11 @@ from flask import current_app, g
 from flask.cli import with_appcontext
 
 # Set the database credentials
-host = "test-database.cpmd3cwyvujs.ap-southeast-2.rds.amazonaws.com"
-port = 3306
-user = "Admin"
-password = "test2023"
-database = "users_db"
+#host = host_name
+#port = port_number
+#user = user_name
+#password = password
+#database = database_name
 
 def get_db():
     if 'db' not in g:
