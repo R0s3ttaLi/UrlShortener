@@ -1,0 +1,45 @@
+import json
+import hashlib
+from flask import Flask, render_template, request, jsonify
+from flask_cors import CORS
+
+#@app.route("/<shorten_url>")
+#def redirect(shorten_url):
+
+
+def randomURL(original_url):
+    m = hashlib.sha256()
+    m.update(original_url.encode("UTF-8"))
+    return m.hexdigest()[:8]
+
+def create_app():
+    app = Flask(__name__)
+    from . import db
+    db.init_app(app)
+
+    @app.route("/shorten", methods = ["POST"])
+    def shortenURL():
+        cursor = db.get_db().cursor()
+        if(request.method == "POST"):
+            input_url = request.json.get("input_url")
+            print(input_url)
+            query = "SELECT shorten_url FROM url WHERE original_url = %s"
+            cursor.execute(query, (input_url, ))
+            db_result = cursor.fetchone()
+            if db_result:
+                shorten_hash = db_result[shorten_url]
+                ret = "http://3.25.86.251:5000/" + db_result
+                return jsonify({"Shorten URL" : ret})
+            query = "SELECT * FROM url WHERE shorten_url = %s"
+            shorten_hash = randomURL(input_url)
+            cursor.execute(query, (shorten_hash, ))
+            while cursor.fetchone() is not None:
+                shorten_hash = randomURL(input_url)
+                cursor.execute(query, (shorten_hash, ))
+            ret = "http://3.25.86.251:5000/" + shorten_hash
+            return jsonify({"Shorten_URL" : ret})
+    
+    CORS(app)
+
+    return app
+
